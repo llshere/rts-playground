@@ -1,29 +1,30 @@
-import './App.css';
+import { FC } from 'react';
+import { BrowserRouter as Router, Link, Route, Switch } from 'react-router-dom';
 
-import React from 'react';
+import { MyList } from './components/my-list';
+import { StaticList } from './components/static-list';
 
-import logo from './logo.svg';
-
-function App() {
-  const a = 6;
+export const App: FC = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div>
+        <ul>
+          <li>
+            <Link to="/StaticList">StaticList</Link>
+          </li>
+          <li>
+            <Link to="/MyList">MyList</Link>
+          </li>
+        </ul>
+        <Switch>
+          <Route path="/StaticList">
+            <StaticList />
+          </Route>
+          <Route path="/MyList">
+            <MyList />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
   );
-}
-
-export default App;
+};
