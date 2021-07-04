@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 import Paper from '@material-ui/core/Paper';
 import { makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,12 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import { createAction } from '@reduxjs/toolkit';
+
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { addNewUniv, Univ } from '../../redux/univListSlice';
+
+import type { RootState } from '../../redux/store';
 
 const useStyles = makeStyles({
   table: {
@@ -15,53 +21,35 @@ const useStyles = makeStyles({
   },
 });
 
-interface Univ {
-  name: string;
-  country: string;
-  web_pages: string;
-}
-
-const createData = (
-  name: string,
-  country: string,
-  web_pages: string
-): Univ => ({
-  name,
-  country,
-  web_pages,
-});
+export const init = createAction('staticList/init');
 
 export const StaticList: FC = () => {
   const classes = useStyles();
 
-  const [univList, setUnivList] = useState<Univ[]>([]);
-  const [loadingMessage, setLoadingMessage] = useState<string>('');
+  const univList: Univ[] = useAppSelector(
+    (state: RootState) => state.univList.value
+  );
+  const errorMessage: string | null = useAppSelector(
+    (state: RootState) => state.univList.error
+  );
+
+  const loadingStatus: string = useAppSelector(
+    (state: RootState) => state.univList.status
+  );
+
+  const dispatch = useAppDispatch();
 
   const handleClick = () => {
-    setUnivList([]);
-    setLoadingMessage('loading...');
-    fetch('http://universities.hipolabs.com/search?country=United+States')
-      .then((res) => res.json())
-      .then(
-        (result: Univ[]) => {
-          const resultUnivList = result
-            .slice(0, 10)
-            .map((el) => createData(el.name, el.country, el.web_pages));
-          setLoadingMessage('');
-          setUnivList(resultUnivList);
-        },
-        (error) => {
-          setLoadingMessage(error.toString());
-        }
-      );
+    dispatch(addNewUniv());
   };
 
   return (
     <div>
       <button onClick={handleClick}>search</button>
-      <div>{loadingMessage}</div>
 
-      {univList.length !== 0 && (
+      {loadingStatus === 'loading' && <div>loading...</div>}
+      {loadingStatus === 'failed' && { errorMessage }}
+      {loadingStatus === 'succeeded' && (
         <TableContainer component={Paper}>
           <Table className={classes.table} aria-label="simple table">
             <TableHead>
@@ -78,7 +66,7 @@ export const StaticList: FC = () => {
                     {univ.name}
                   </TableCell>
                   <TableCell align="right">{univ.country}</TableCell>
-                  <TableCell align="right">{univ.web_pages}</TableCell>
+                  <TableCell align="right">{univ.webPages}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
