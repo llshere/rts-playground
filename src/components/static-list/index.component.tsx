@@ -8,7 +8,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import { createAction } from '@reduxjs/toolkit';
 
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { addNewUniv, Univ } from '../../redux/univListSlice';
@@ -20,8 +19,6 @@ const useStyles = makeStyles({
     minWidth: 650,
   },
 });
-
-export const init = createAction('staticList/init');
 
 export const StaticList: FC = () => {
   const classes = useStyles();
@@ -57,6 +54,7 @@ export const StaticList: FC = () => {
                 <TableCell>name</TableCell>
                 <TableCell align="right">country</TableCell>
                 <TableCell align="right">webpages</TableCell>
+                <TableCell align="right">comment</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -67,6 +65,7 @@ export const StaticList: FC = () => {
                   </TableCell>
                   <TableCell align="right">{univ.country}</TableCell>
                   <TableCell align="right">{univ.webPages}</TableCell>
+                  <TableCell align="right">{univ.comment}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

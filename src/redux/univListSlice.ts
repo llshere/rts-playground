@@ -1,4 +1,7 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice
+} from '@reduxjs/toolkit';
 
 export interface Univ {
   domain: string[];
@@ -7,6 +10,7 @@ export interface Univ {
   alphaTwoCode: string;
   country: string;
   stateProvince: string | null;
+  comment: string | null;
 }
 
 const createUnivData = (json: Record<string, any>): Univ => ({
@@ -16,6 +20,7 @@ const createUnivData = (json: Record<string, any>): Univ => ({
   alphaTwoCode: json.alpha_two_code,
   country: json.country,
   stateProvince: json['state-province'],
+  comment: '',
 });
 
 export interface UnivState {
@@ -39,7 +44,30 @@ export const addNewUniv = createAsyncThunk('univList/addNewUniv', async () => {
 export const univListSlice = createSlice({
   name: 'univList',
   initialState,
-  reducers: {},
+  reducers: {
+    editComment: {
+      reducer(state, action: any) {
+        state.value[action.payload.index] = {
+          ...state.value[action.payload.index],
+          comment: action.payload.content,
+        };
+      },
+      prepare(index: number, content: string) {
+        return {
+          payload: {
+            index,
+            content,
+          },
+        };
+      },
+    },
+    clearComment: (state) => {
+      state.value = state.value.map((univ) => ({
+        ...univ,
+        comment: '',
+      }));
+    },
+  },
   extraReducers: {
     [addNewUniv.pending as any]: (state) => {
       state.status = 'loading';
@@ -58,3 +86,4 @@ export const univListSlice = createSlice({
 });
 
 export default univListSlice.reducer;
+export const { editComment, clearComment } = univListSlice.actions;
